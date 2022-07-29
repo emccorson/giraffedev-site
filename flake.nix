@@ -19,10 +19,12 @@
                 cabal = {};
                 hlint = {};
                 haskell-language-server = {};
+                ghcid = {};
               };
               # Non-Haskell shell tools go here
               shell.buildInputs = with pkgs; [
                 nixpkgs-fmt
+                gnumake
               ];
               # This adds `js-unknown-ghcjs-cabal` to the shell.
               # shell.crossPlatforms = p: [p.ghcjs];
