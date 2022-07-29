@@ -24,6 +24,7 @@ rules = do
       route $ setExtension "html"
       compile $ pandocCompiler
           >>= loadAndApplyTemplate "templates/post.html"    postCtx
+          >>= saveSnapshot "content"
           >>= loadAndApplyTemplate "templates/default.html" postCtx
           >>= relativizeUrls
 
@@ -44,14 +45,14 @@ rules = do
   match "index.html" $ do
       route idRoute
       compile $ do
-          posts <- recentFirst =<< loadAll "posts/*"
-          let indexCtx =
-                  listField "posts" postCtx (return posts) `mappend`
-                  defaultContext
+          latestPost : _ <- recentFirst =<< loadAllSnapshots "posts/*" "content"
+          let latestCtx =
+                    constField "latest" (itemBody latestPost) `mappend`
+                    defaultContext
 
           getResourceBody
-              >>= applyAsTemplate indexCtx
-              >>= loadAndApplyTemplate "templates/default.html" indexCtx
+              >>= applyAsTemplate latestCtx
+              >>= loadAndApplyTemplate "templates/default.html" defaultContext
               >>= relativizeUrls
 
   match "templates/*" $ compile templateBodyCompiler
