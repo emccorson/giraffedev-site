@@ -59,6 +59,12 @@ rules = do
               >>= loadAndApplyTemplate "templates/default.html" globalCtx
               >>= relativizeUrls
 
+  match "contact.md" $ do
+      route   $ setExtension "html"
+      compile $ pandocCompiler
+          >>= loadAndApplyTemplate "templates/default.html" globalCtx
+          >>= relativizeUrls
+
   match "index.html" $ do
       route idRoute
       compile $ do
