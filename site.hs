@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid (mappend)
 import           Hakyll
-
+import           Data.Maybe (fromMaybe)
 
 --------------------------------------------------------------------------------
 rules = do
@@ -29,7 +29,7 @@ rules = do
           let archiveCtx =
                   listField "posts" postCtx (return posts) `mappend`
                   constField "title" "Archives"            `mappend`
-                  defaultContext
+                  globalCtx
 
           makeItem ""
               >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -40,13 +40,15 @@ rules = do
       route idRoute
       compile $ do
           latestPost : _ <- recentFirst =<< loadAllSnapshots "posts/*" "content"
+          postTitle <- getMetadataField (itemIdentifier latestPost) "title"
           let latestCtx =
                     constField "latest" (itemBody latestPost) `mappend`
-                    defaultContext
+                    constField "title" (fromMaybe "" postTitle) `mappend`
+                    globalCtx
 
           getResourceBody
               >>= applyAsTemplate latestCtx
-              >>= loadAndApplyTemplate "templates/default.html" defaultContext
+              >>= loadAndApplyTemplate "templates/default.html" latestCtx
               >>= relativizeUrls
 
   match "templates/*" $ compile templateBodyCompiler
@@ -65,7 +67,12 @@ ghcid = do
     hackleCmd command = hakyllWithExitCodeAndArgs defaultConfiguration (Options False command) rules
 
 --------------------------------------------------------------------------------
+globalCtx :: Context String
+globalCtx =
+    constField "site" "giraffedev" `mappend`
+    defaultContext
+
 postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y" `mappend`
-    defaultContext
+    globalCtx
