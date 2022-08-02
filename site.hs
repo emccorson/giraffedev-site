@@ -3,6 +3,13 @@
 import           Data.Monoid (mappend)
 import           Hakyll
 import           Data.Maybe (fromMaybe)
+import           Data.Time.Locale.Compat (defaultTimeLocale)
+import           Data.Time.Clock (utctDay)
+import           Data.Time.Calendar (toGregorian, fromGregorian)
+import           Data.Time.Format (formatTime)
+import           Data.List (groupBy)
+
+import Debug.Trace
 
 --------------------------------------------------------------------------------
 rules = do
@@ -26,14 +33,30 @@ rules = do
       route idRoute
       compile $ do
           posts <- recentFirst =<< loadAll "posts/*"
+          grouped <- groupPosts posts
+
+          -- group posts by year and then by month
+          let indexedPostCtx =
+                  listField "years" (
+                    field "year" (return . show . fst . itemBody) <>
+                    listFieldWith "months" (
+                      field "month" (return . monthToString . fst . itemBody) <>
+                      listFieldWith "posts" (
+                        dateField "date" "%e" <>
+                        globalCtx
+                      ) (return . snd . itemBody)
+                    ) (mapM makeItem . snd . itemBody)
+                  ) (mapM makeItem grouped)
+
           let archiveCtx =
+                  indexedPostCtx <>
                   listField "posts" postCtx (return posts) `mappend`
                   constField "title" "Archives"            `mappend`
                   globalCtx
 
           makeItem ""
               >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-              >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+              >>= loadAndApplyTemplate "templates/default.html" globalCtx
               >>= relativizeUrls
 
   match "index.html" $ do
@@ -76,3 +99,32 @@ postCtx :: Context String
 postCtx =
     dateField "date" "%B %e, %Y" `mappend`
     globalCtx
+
+
+type Year = Integer
+type Month = Int
+
+-- group posts by year and then by month
+groupPosts :: [Item String] -> Compiler [(Year, [(Month, [Item String])])]
+groupPosts xs = mapM makeTuple xs >>= \tupleList ->
+                    let
+                      yearGrouped = group tupleList
+                      yearIndexed = map index yearGrouped
+                      monthIndexed = map (\(y, mi) -> (y, (map index . group) mi)) yearIndexed
+                    in return monthIndexed
+  where
+
+    makeTuple :: Item String -> Compiler (Year, (Month, Item String))
+    makeTuple i = do
+      (year, month, _) <- return . toGregorian . utctDay =<< getItemUTC defaultTimeLocale (itemIdentifier i)
+      return (year, (month, i))
+
+    group :: Eq a => [(a, b)] -> [[(a, b)]]
+    group = groupBy (\(x, _) (y, _) -> x == y)
+
+    index :: [(a, b)] -> (a, [b])
+    index (x:xs) = (fst x, map snd (x:xs))
+
+-- e.g. 3 -> "March"
+monthToString :: Month -> String
+monthToString m = formatTime defaultTimeLocale "%B" (fromGregorian 1 m 1)

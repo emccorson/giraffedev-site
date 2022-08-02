@@ -1,8 +1,21 @@
-Here you can find all my previous posts:
-<ul>
-    $for(posts)$
-        <li>
-            <a href="$url$">$title$</a> - $date$
-        </li>
-    $endfor$
-</ul>
+<table>
+$for(years)$
+
+  <tr>
+    <th>$year$</th>
+  </tr>
+
+  $for(months)$
+    <tr>
+      <th>$month$</th>
+    </tr>
+    <tr>
+      $for(posts)$
+        <th>$date$</th>
+        <td>$title$</td>
+      $endfor$
+    </tr>
+  $endfor$
+
+$endfor$
+</table>
