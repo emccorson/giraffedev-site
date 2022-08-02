@@ -1,7 +1,7 @@
-<table>
+<table class="archive">
 $for(years)$
 
-  <tr>
+  <tr class="archive__year">
     <th>$year$</th>
   </tr>
 
@@ -12,7 +12,7 @@ $for(years)$
     <tr>
       $for(posts)$
         <th>$date$</th>
-        <td>$title$</td>
+        <td><a class="link" href="$url$">$title$</a></td>
       $endfor$
     </tr>
   $endfor$

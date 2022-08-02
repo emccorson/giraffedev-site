@@ -53,3 +53,11 @@
   font-size: 0.8em;
   color: var(--color-light);
 }
+
+.archive {
+  border-collapse: collapse;
+}
+
+.archive__year {
+  border-top: 2em solid transparent;
+}
