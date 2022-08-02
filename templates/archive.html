@@ -9,12 +9,12 @@ $for(years)$
     <tr>
       <th>$month$</th>
     </tr>
-    <tr>
       $for(posts)$
-        <th>$date$</th>
-        <td><a class="link" href="$url$">$title$</a></td>
+        <tr>
+          <th>$date$</th>
+          <td><a class="link" href="$url$">$title$</a></td>
+        </tr>
       $endfor$
-    </tr>
   $endfor$
 
 $endfor$
