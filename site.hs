@@ -88,8 +88,11 @@ rules = do
 
   match "templates/*" $ compile templateBodyCompiler
 
+config :: Configuration
+config = defaultConfiguration { destinationDirectory = "docs" }
+
 main :: IO ()
-main = hakyll rules
+main = hakyllWith config rules
 
 -- run hakyll clean and hakyll watch
 -- for use with ghcid
@@ -99,7 +102,7 @@ ghcid = do
           hakyllCmd $ Watch "localhost" 8000 False
           return ()
   where
-    hakyllCmd command = hakyllWithExitCodeAndArgs defaultConfiguration (Options False command) rules
+    hakyllCmd command = hakyllWithExitCodeAndArgs config (Options False command) rules
 
 --------------------------------------------------------------------------------
 globalCtx :: Context String
