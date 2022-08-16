@@ -95,11 +95,11 @@ main = hakyll rules
 -- for use with ghcid
 ghcid :: IO ()
 ghcid = do
-          hackleCmd Clean
-          hackleCmd $ Watch "localhost" 8000 False
+          hakyllCmd Clean
+          hakyllCmd $ Watch "localhost" 8000 False
           return ()
   where
-    hackleCmd command = hakyllWithExitCodeAndArgs defaultConfiguration (Options False command) rules
+    hakyllCmd command = hakyllWithExitCodeAndArgs defaultConfiguration (Options False command) rules
 
 --------------------------------------------------------------------------------
 globalCtx :: Context String
