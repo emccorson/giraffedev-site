@@ -2,9 +2,5 @@
 title: hello, world
 ---
 
-    #include <stdio.h>
-
-    main()
-    {
-        printf("hello, world\n");
-    }
+    main : IO ()
+    main = putStrLn "hello, world"
