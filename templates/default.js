@@ -1,21 +1,25 @@
+module.exports = {
+  site: "giraffedev",
+  html(title, body) {
+    return `\
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>$site$ - $title$</title>
+        <title>${this.site} - ${title}</title>
         <link rel="stylesheet" href="/css/default.css" />
     </head>
     <body class="container">
       <header>
         <h2 class="header">
-          <a class="header__site link" href="/">$site$:</a> <span class="header__post">$title$</span>
+          <a class="header__site link" href="/">${this.site}:</a> <span class="header__post">${title}</span>
         </h2>
       </header>
 
       <main class="content" role="main">
-        $body$
+        ${body}
       </main>
       <footer>
         <ul class="footer">
@@ -25,4 +29,6 @@
         </ul>
       </footer>
     </body>
-</html>
+</html>`;
+  }
+};
